@@ -1,17 +1,19 @@
-#Streamlit app for the waste optimizer
+# streamlit_app.py
 
 import os
 import json
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
+import tempfile
+from fpdf import FPDF
+
 from optimizador.models import PiezaInventario, PiezaModelo, ModeloMueble
 from optimizador.logic import optimizar_por_color
 
 # ── Paths de datos ───────────────────────────────────────────────────
 DATA_DIR = "data"
-INV_FILE  = os.path.join(DATA_DIR, "inventario.json")
-MOD_FILE  = os.path.join(DATA_DIR, "modelos.json")
+INV_FILE = os.path.join(DATA_DIR, "inventario.json")
+MOD_FILE = os.path.join(DATA_DIR, "modelos.json")
 
 # ── Funciones de persistencia ────────────────────────────────────────
 def leer_json(path):
@@ -54,17 +56,17 @@ módulo = st.sidebar.radio(
 if módulo == "Sobrantes":
     st.header("📥 Agregar Sobrantes")
     with st.form("form_sobrantes", clear_on_submit=True):
-        c1,c2,c3,c4,c5,c6 = st.columns(6)
+        c1, c2, c3, c4, c5, c6 = st.columns(6)
         with c1:
             codigo = st.text_input("Código")
         with c2:
-            ancho  = st.number_input("Ancho (mm)", min_value=0.0)
+            ancho = st.number_input("Ancho (mm)", min_value=0.0)
         with c3:
-            largo  = st.number_input("Largo (mm)", min_value=0.0)
+            largo = st.number_input("Largo (mm)", min_value=0.0)
         with c4:
-            color  = st.text_input("Color")
+            color = st.text_input("Color")
         with c5:
-            espesor= st.number_input("Espesor (mm)", min_value=0.0)
+            espesor = st.number_input("Espesor (mm)", min_value=0.0)
         with c6:
             cantidad = st.number_input("Cantidad", min_value=1, value=1, step=1)
         guardar = st.form_submit_button("💾 Guardar pieza")
@@ -86,34 +88,29 @@ if módulo == "Sobrantes":
     df_inv = pd.DataFrame(st.session_state['inventario'])
     if not df_inv.empty:
         df_inv['Eliminar'] = False
-        edited = st.data_editor(
-            df_inv,
-            num_rows="dynamic",
-            use_container_width=True
-        )
+        edited = st.data_editor(df_inv, num_rows="dynamic", use_container_width=True)
         to_delete = edited.index[edited['Eliminar']].tolist()
         if to_delete and st.button("🗑️ Eliminar seleccionadas"):
             for idx in sorted(to_delete, reverse=True):
                 st.session_state['inventario'].pop(idx)
             guardar_json(INV_FILE, st.session_state['inventario'])
-            st.success("Piezas eliminadas correctamente.")
+            st.experimental_rerun()
     else:
         st.info("No hay piezas en el inventario aún.")
 
 # ── Módulo “Modelos” ─────────────────────────────────────────────────
 elif módulo == "Modelos":
     st.header("📋 Definir Modelos de Muebles")
-    # Formulario de piezas del modelo (sin Color)
     with st.form("form_pieza_modelo", clear_on_submit=True):
-        c1,c2,c3,c4,c5,c6 = st.columns(6)
+        c1, c2, c3, c4, c5, c6 = st.columns(6)
         with c1:
             codigo_req = st.text_input("Código pieza")
         with c2:
-            ancho_req  = st.number_input("Ancho (mm)", min_value=0.0)
+            ancho_req = st.number_input("Ancho (mm)", min_value=0.0)
         with c3:
-            largo_req  = st.number_input("Largo (mm)", min_value=0.0)
+            largo_req = st.number_input("Largo (mm)", min_value=0.0)
         with c4:
-            espesor_req= st.number_input("Espesor (mm)", min_value=0.0)
+            espesor_req = st.number_input("Espesor (mm)", min_value=0.0)
         with c5:
             cantidad_req = st.number_input("Cantidad", min_value=1, value=1, step=1)
         add_pz = st.form_submit_button("➕ Agregar pieza")
@@ -131,27 +128,20 @@ elif módulo == "Modelos":
     df_buf = pd.DataFrame(st.session_state['pieza_buffer'])
     if not df_buf.empty:
         df_buf['Eliminar'] = False
-        edited_buf = st.data_editor(
-            df_buf,
-            num_rows="dynamic",
-            use_container_width=True
-        )
+        edited_buf = st.data_editor(df_buf, num_rows="dynamic", use_container_width=True)
         to_del_buf = edited_buf.index[edited_buf['Eliminar']].tolist()
         if to_del_buf and st.button("🗑️ Eliminar del buffer"):
             for idx in sorted(to_del_buf, reverse=True):
                 st.session_state['pieza_buffer'].pop(idx)
-            st.success("Piezas eliminadas del buffer.")
+            st.experimental_rerun()
     else:
         st.info("El buffer está vacío. Agrega piezas arriba.")
 
     st.markdown("---")
-    # Guardar modelo completo
     with st.form("form_modelo", clear_on_submit=True):
         id_mod = st.number_input(
-            "ID del modelo",
-            min_value=1,
-            value=len(st.session_state['modelos'])+1,
-            step=1
+            "ID del modelo", min_value=1,
+            value=len(st.session_state['modelos']) + 1, step=1
         )
         nombre_mod = st.text_input("Nombre del modelo")
         save_mod = st.form_submit_button("✅ Guardar modelo")
@@ -166,22 +156,17 @@ elif módulo == "Modelos":
         guardar_json(MOD_FILE, st.session_state['modelos'])
         st.success(f"Modelo '{nombre_mod}' guardado.")
 
-    st.markdown("---")
     st.subheader("🗂️ Modelos disponibles")
     df_mods = pd.DataFrame(st.session_state['modelos'])
     if not df_mods.empty:
         df_mods['Eliminar'] = False
-        edited_mod = st.data_editor(
-            df_mods,
-            num_rows="dynamic",
-            use_container_width=True
-        )
+        edited_mod = st.data_editor(df_mods, num_rows="dynamic", use_container_width=True)
         to_del_mod = edited_mod.index[edited_mod['Eliminar']].tolist()
         if to_del_mod and st.button("🗑️ Eliminar modelos"):
             for idx in sorted(to_del_mod, reverse=True):
                 st.session_state['modelos'].pop(idx)
             guardar_json(MOD_FILE, st.session_state['modelos'])
-            st.success("Modelos eliminados correctamente.")
+            st.experimental_rerun()
     else:
         st.info("No hay modelos definidos aún.")
 
@@ -189,11 +174,12 @@ elif módulo == "Modelos":
 elif módulo == "Optimización":
     st.header("🔎 Ejecutar Optimización")
     inv_objs = [PiezaInventario(**p) for p in st.session_state['inventario']]
-
     nombres = [m["nombre"] for m in st.session_state['modelos']]
+
     if not nombres:
         st.warning("Define primero algún modelo.")
         st.stop()
+
     modelo_sel = st.selectbox("Selecciona modelo", nombres)
     cantidad = st.number_input("Cantidad deseada", min_value=1, value=1, step=1)
 
@@ -207,41 +193,56 @@ elif módulo == "Optimización":
 
     if st.button("🛠️ Optimizar"):
         resultados = optimizar_por_color(modelo_obj, inv_objs, cantidad)
+        st.session_state["resultados_optimizados"] = resultados
+
+    if "resultados_optimizados" in st.session_state:
+        resultados = st.session_state["resultados_optimizados"]
+
+        piezas_lista = []
         for res in resultados:
-            st.subheader(f"🎨 Color: {res['color']}")
-            st.write(f"Fabricables: {res['cantidadFabricable']} / {res['cantidadSolicitada']}")
-            flat = [item for lote in res["piezasUtilizadas"] for item in lote]
-            if flat:
-                st.dataframe(pd.DataFrame(flat), use_container_width=True)
-            else:
-                st.write("No hay piezas válidas para este color.")        
+            for lote in res["piezasUtilizadas"]:
+                for pieza in lote:
+                    piezas_lista.append({
+                        "Código tablero": pieza["codigo"],
+                        "Color": pieza["color"],
+                        "Ancho (mm)": pieza["ancho"],
+                        "Largo (mm)": pieza["largo"],
+                        "Espesor (mm)": pieza["espesor"],
+                        "Cantidad requerida": pieza["cantidad_req"],
+                        "Piezas por tablero": pieza["fit_count"],
+                        "Tableros usados": pieza["tableros_usados"]
+                    })
 
-# Guardar datos de eficiencia
-efficiency_data = []
+        if piezas_lista:
+            df_export = pd.DataFrame(piezas_lista)
 
-for res in resultados:
-    area_piezas = 0
-    area_tableros = 0
+            # Crear PDF temporal
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=10)
+            pdf.cell(200, 10, txt="Listado de piezas optimizadas", ln=True, align="C")
+            pdf.ln(10)
 
-    for lote in res["piezasUtilizadas"]:
-        for pieza in lote:
-            area_piezas += pieza["cantidad_req"] * pieza["largo"] * pieza["ancho"]
-            area_tableros += pieza["tableros_usados"] * pieza["largo"] * pieza["ancho"]
+            # Cabeceras
+            for col in df_export.columns:
+                pdf.cell(30, 8, col, border=1)
+            pdf.ln()
 
-    eficiencia = (area_piezas / area_tableros) * 100 if area_tableros else 0
-    efficiency_data.append({
-        "color": res["color"],
-        "eficiencia": eficiencia
-    })
+            # Filas
+            for index, row in df_export.iterrows():
+                for item in row:
+                    pdf.cell(30, 8, str(item), border=1)
+                pdf.ln()
 
-# Plot gráfico de eficiencia
-if efficiency_data:
-    df_eff = pd.DataFrame(efficiency_data)
-    fig, ax = plt.subplots()
-    ax.bar(df_eff["color"], df_eff["eficiencia"])
-    ax.set_ylabel("Aprovechamiento (%)")
-    ax.set_xlabel("Color")
-    ax.set_title("Eficiencia de Aprovechamiento por Color")
-    ax.set_ylim(0, 100)
-    st.pyplot(fig)
+            tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            pdf.output(tmp_file.name)
 
+            with open(tmp_file.name, "rb") as f:
+                st.download_button(
+                    label="📥 Descargar PDF de piezas optimizadas",
+                    data=f,
+                    file_name="optimizado_piezas.pdf",
+                    mime="application/pdf"
+                )
+        else:
+            st.info("No se encontraron piezas fabricables para exportar.")
