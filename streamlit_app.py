@@ -216,6 +216,9 @@ elif módulo == "Optimización":
         if piezas_lista:
             df_export = pd.DataFrame(piezas_lista)
 
+            st.subheader("📋 Resumen de piezas optimizadas")
+            st.dataframe(df_export, use_container_width=True)
+            
             # Crear PDF temporal
             pdf = FPDF()
             pdf.add_page()
