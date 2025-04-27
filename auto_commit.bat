@@ -23,6 +23,12 @@ git commit -m "Auto commit %count%" >nul 2>&1
 
 if %errorlevel% equ 0 (
     echo ✅ Commit realizado.
+
+    :: Obtener y mostrar detalles del commit
+    for /f "delims=" %%H in ('git rev-parse --short HEAD') do set lastHash=%%H
+    for /f "delims=" %%M in ('git log -1 --pretty=format:"%%s"') do set lastMsg=%%M
+    echo 🔨 Commit actual: %lastHash% - %lastMsg%
+
     git push origin main >nul 2>&1
     echo 🚀 Push a main completado.
 ) else (

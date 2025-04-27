@@ -1,0 +1,170 @@
+[
+  {
+    "codigo": "001",
+    "ancho": 220.0,
+    "largo": 300.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "002",
+    "ancho": 350.0,
+    "largo": 500.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "003",
+    "ancho": 200.0,
+    "largo": 530.0,
+    "color": "WENGUE",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "004",
+    "ancho": 490.0,
+    "largo": 600.0,
+    "color": "CAOBA",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "005",
+    "ancho": 240.0,
+    "largo": 350.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "006",
+    "ancho": 190.0,
+    "largo": 200.0,
+    "color": "CAOBA",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "007",
+    "ancho": 225.0,
+    "largo": 280.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "008",
+    "ancho": 230.0,
+    "largo": 540.0,
+    "color": "WENGUE",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "009",
+    "ancho": 280.0,
+    "largo": 580.0,
+    "color": "WENGUE",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "010",
+    "ancho": 230.0,
+    "largo": 270.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "011",
+    "ancho": 190.0,
+    "largo": 190.0,
+    "color": "WENGUE",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "012",
+    "ancho": 150.0,
+    "largo": 800.0,
+    "color": "CAOBA",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "013",
+    "ancho": 180.0,
+    "largo": 330.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "014",
+    "ancho": 200.0,
+    "largo": 400.0,
+    "color": "CAOBA",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "015",
+    "ancho": 115.0,
+    "largo": 350.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "016",
+    "ancho": 200.0,
+    "largo": 1580.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "017",
+    "ancho": 390.0,
+    "largo": 400.0,
+    "color": "CAOBA",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "018",
+    "ancho": 160.0,
+    "largo": 330.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "019",
+    "ancho": 190.0,
+    "largo": 250.0,
+    "color": "WENGUE",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "020",
+    "ancho": 290.0,
+    "largo": 490.0,
+    "color": "AZUL",
+    "espesor": 15.0,
+    "cantidad": 1
+  },
+  {
+    "codigo": "021",
+    "ancho": 140.0,
+    "largo": 360.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 1
+  }
+]

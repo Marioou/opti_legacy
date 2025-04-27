@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "nombre": "BANQUETA",
+    "piezas": [
+      {
+        "codigo": "A",
+        "ancho": 200.0,
+        "largo": 250.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "B",
+        "ancho": 120.0,
+        "largo": 320.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "C",
+        "ancho": 100.0,
+        "largo": 320.0,
+        "espesor": 15.0,
+        "cantidad": 1
+      }
+    ]
+  }
+]

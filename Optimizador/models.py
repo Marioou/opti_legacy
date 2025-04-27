@@ -6,16 +6,17 @@ from typing import List, Optional
 @dataclass
 class PiezaInventario:
     codigo: str
-    largo: float
     ancho: float
+    largo: float
+    color: str
     espesor: Optional[float]
     cantidad: int
 
 @dataclass
 class PiezaModelo:
-    descripcion: str
-    largo: float
+    codigo: str
     ancho: float
+    largo: float
     espesor: Optional[float]
     cantidad: int
 
