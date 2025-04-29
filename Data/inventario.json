@@ -9110,5 +9110,13 @@
     "color": "CAOBA",
     "espesor": 18,
     "cantidad": 4
+  },
+  {
+    "codigo": "A001",
+    "ancho": 200.0,
+    "largo": 300.0,
+    "color": "BLANCO",
+    "espesor": 15.0,
+    "cantidad": 2
   }
 ]
