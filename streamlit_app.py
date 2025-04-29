@@ -140,7 +140,6 @@ if módulo == "Sobrantes":
                 st.session_state['inventario'].pop(idx)
             guardar_json(INV_FILE, st.session_state['inventario'])
             st.success("Piezas eliminadas correctamente.")
-            st.experimental_rerun()
     else:
         st.info("No hay piezas en el inventario aún.")
 
