@@ -119,10 +119,12 @@ if módulo == "Sobrantes":
 
     df_inv = pd.DataFrame(st.session_state['inventario'])
 
-    if not df_inv.empty:
-        df_inv["Eliminar"] = False  # Nueva columna tipo checkbox
+    if df_inv.empty:
+            st.info("No hay piezas en el inventario aún.")
+    else:
+        df_inv["Eliminar"] = False
 
-    edited_df = st.data_editor(
+        edited_df = st.data_editor(
         df_inv,
         use_container_width=True,
         num_rows="dynamic",
@@ -130,18 +132,17 @@ if módulo == "Sobrantes":
         hide_index=True
     )
 
-    # Detectar qué filas se marcaron para eliminar
-    to_delete = edited_df[edited_df["Eliminar"]].index.tolist()
+        to_delete = edited_df[edited_df["Eliminar"]].index.tolist()
 
-    if to_delete:
-        st.warning(f"{len(to_delete)} piezas marcadas para eliminar.")
-        if st.button("🗑️ Quitar las piezas seleccionadas"):
-            for idx in sorted(to_delete, reverse=True):
-                st.session_state['inventario'].pop(idx)
-            guardar_json(INV_FILE, st.session_state['inventario'])
-            st.success("Piezas eliminadas correctamente.")
-    else:
-        st.info("No hay piezas en el inventario aún.")
+        if to_delete:
+            st.warning(f"{len(to_delete)} piezas marcadas para eliminar.")
+            if st.button("🗑️ Quitar las piezas seleccionadas"):
+                for idx in sorted(to_delete, reverse=True):
+                    st.session_state['inventario'].pop(idx)
+                    guardar_json(INV_FILE, st.session_state['inventario'])
+                    st.success("Piezas eliminadas correctamente.")
+        else:
+            st.info("No hay piezas en el inventario aún.")
 
 
 
