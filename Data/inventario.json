@@ -1,29 +1,5 @@
 [
   {
-    "codigo": "COD052",
-    "ancho": 542,
-    "largo": 1442,
-    "color": "GRIS",
-    "espesor": 20,
-    "cantidad": 2
-  },
-  {
-    "codigo": "COD053",
-    "ancho": 491,
-    "largo": 2491,
-    "color": "NEGRO",
-    "espesor": 15,
-    "cantidad": 1
-  },
-  {
-    "codigo": "COD054",
-    "ancho": 578,
-    "largo": 1494,
-    "color": "WENGUE",
-    "espesor": 15,
-    "cantidad": 5
-  },
-  {
     "codigo": "COD056",
     "ancho": 340,
     "largo": 649,
@@ -62,14 +38,6 @@
     "color": "ROBLE",
     "espesor": 15,
     "cantidad": 3
-  },
-  {
-    "codigo": "COD061",
-    "ancho": 222,
-    "largo": 2447,
-    "color": "BLANCO",
-    "espesor": 18,
-    "cantidad": 4
   },
   {
     "codigo": "COD062",
