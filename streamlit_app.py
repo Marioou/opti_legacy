@@ -10,6 +10,9 @@ from fpdf import FPDF
 from optimizador.models import PiezaInventario, PiezaModelo, ModeloMueble
 from optimizador.logic import optimizar_por_color
 
+from optimizador.logic_opti5 import simulated_annealing_optimize
+from optimizador.logic import optimizar_por_color
+
 # ── Paths de datos ───────────────────────────────────────────────────
 DATA_DIR = "data"
 INV_FILE = os.path.join(DATA_DIR, "inventario.json")
@@ -84,19 +87,64 @@ if módulo == "Sobrantes":
         st.success(f"Pieza '{codigo}' agregada.")
 
     st.markdown("---")
+    st.subheader("📤 Subir inventario desde Excel")
+
+    archivo_excel = st.file_uploader("Carga un archivo Excel (.xlsx)", type=["xlsx"])
+
+    if archivo_excel:
+        try:
+            df_excel = pd.read_excel(archivo_excel)
+
+            # Verificación de columnas mínimas necesarias
+            columnas_requeridas = ["codigo", "ancho", "largo", "color", "espesor", "cantidad"]
+            
+            if not set(columnas_requeridas).issubset(df_excel.columns.str.lower()):
+                st.error(f"El archivo debe contener las columnas: {', '.join(columnas_requeridas)}")
+            
+            else:
+            # Normalizar nombres
+                df_excel.columns = df_excel.columns.str.lower()
+
+            # Convertir a dicts y añadir
+            nuevas_piezas = df_excel[columnas_requeridas].to_dict(orient="records")
+            st.session_state['inventario'].extend(nuevas_piezas)
+            guardar_json(INV_FILE, st.session_state['inventario'])
+            st.success(f"Inventario cargado correctamente: {len(nuevas_piezas)} piezas añadidas.")
+        
+        except Exception as e:
+            st.error(f"Error al leer el archivo: {e}")
+      
+    st.markdown("---")
     st.subheader("📦 Inventario de Sobrantes")
+
     df_inv = pd.DataFrame(st.session_state['inventario'])
+
     if not df_inv.empty:
-        df_inv['Eliminar'] = False
-        edited = st.data_editor(df_inv, num_rows="dynamic", use_container_width=True)
-        to_delete = edited.index[edited['Eliminar']].tolist()
-        if to_delete and st.button("🗑️ Eliminar seleccionadas"):
+        df_inv["Eliminar"] = False  # Nueva columna tipo checkbox
+
+    edited_df = st.data_editor(
+        df_inv,
+        use_container_width=True,
+        num_rows="dynamic",
+        key="editor_inventario",
+        hide_index=True
+    )
+
+    # Detectar qué filas se marcaron para eliminar
+    to_delete = edited_df[edited_df["Eliminar"]].index.tolist()
+
+    if to_delete:
+        st.warning(f"{len(to_delete)} piezas marcadas para eliminar.")
+        if st.button("🗑️ Quitar las piezas seleccionadas"):
             for idx in sorted(to_delete, reverse=True):
                 st.session_state['inventario'].pop(idx)
             guardar_json(INV_FILE, st.session_state['inventario'])
+            st.success("Piezas eliminadas correctamente.")
             st.experimental_rerun()
     else:
         st.info("No hay piezas en el inventario aún.")
+
+
 
 # ── Módulo “Modelos” ─────────────────────────────────────────────────
 elif módulo == "Modelos":
@@ -191,6 +239,8 @@ elif módulo == "Optimización":
         piezas=[PiezaModelo(**pz) for pz in modelo_data["piezas"]]
     )
 
+    motor = st.radio("Selecciona motor de optimización", ["Clásico", "Simulated Annealing (Opti 5.0)"])
+
     if st.button("🛠️ Optimizar"):
         resultados = optimizar_por_color(modelo_obj, inv_objs, cantidad)
         st.session_state["resultados_optimizados"] = resultados
@@ -202,16 +252,16 @@ elif módulo == "Optimización":
         for res in resultados:
             for lote in res["piezasUtilizadas"]:
                 for pieza in lote:
-                    piezas_lista.append({
-                        "Código tablero": pieza["codigo"],
-                        "Color": pieza["color"],
-                        "Ancho (mm)": pieza["ancho"],
-                        "Largo (mm)": pieza["largo"],
-                        "Espesor (mm)": pieza["espesor"],
-                        "Cantidad requerida": pieza["cantidad_req"],
-                        "Piezas por tablero": pieza["fit_count"],
-                        "Tableros usados": pieza["tableros_usados"]
+                        piezas_lista.append({
+                            "Código tablero": pieza["codigo"],
+                            "Color": pieza["color"],
+                            "Ancho (mm)": pieza["ancho"],
+                            "Largo (mm)": pieza["largo"],
+                            "Espesor (mm)": pieza["espesor"],
+                            "Cantidad requerida": pieza["cantidad_req"],
+                            "Pieza del modelo": pieza["pieza_modelo_codigo"],
                     })
+
 
         if piezas_lista:
             df_export = pd.DataFrame(piezas_lista)
@@ -219,33 +269,32 @@ elif módulo == "Optimización":
             st.subheader("📋 Resumen de piezas optimizadas")
             st.dataframe(df_export, use_container_width=True)
             
-            # Crear PDF temporal
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", size=10)
-            pdf.cell(200, 10, txt="Listado de piezas optimizadas", ln=True, align="C")
-            pdf.ln(10)
+            # PDF Export
+        from fpdf import FPDF
+        import tempfile
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=10)
+        pdf.cell(200, 10, txt="Listado de piezas optimizadas", ln=True, align="C")
+        pdf.ln(10)
 
-            # Cabeceras
-            for col in df_export.columns:
-                pdf.cell(30, 8, col, border=1)
+        for col in df_export.columns:
+            pdf.cell(30, 8, col, border=1)
+        pdf.ln()
+        for _, row in df_export.iterrows():
+            for item in row:
+                pdf.cell(30, 8, str(item), border=1)
             pdf.ln()
 
-            # Filas
-            for index, row in df_export.iterrows():
-                for item in row:
-                    pdf.cell(30, 8, str(item), border=1)
-                pdf.ln()
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        pdf.output(tmp_file.name)
 
-            tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-            pdf.output(tmp_file.name)
-
-            with open(tmp_file.name, "rb") as f:
-                st.download_button(
-                    label="📥 Descargar PDF de piezas optimizadas",
-                    data=f,
-                    file_name="optimizado_piezas.pdf",
-                    mime="application/pdf"
-                )
-        else:
-            st.info("No se encontraron piezas fabricables para exportar.")
+        with open(tmp_file.name, "rb") as f:
+            st.download_button(
+                label="📥 Descargar PDF de piezas optimizadas",
+                data=f,
+                file_name="optimizado_piezas.pdf",
+                mime="application/pdf"
+            )
+    else:
+        st.info("No se encontraron piezas fabricables para exportar.")

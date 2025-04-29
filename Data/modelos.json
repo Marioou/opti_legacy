@@ -25,5 +25,73 @@
         "cantidad": 1
       }
     ]
+  },
+  {
+    "id": 2,
+    "nombre": "REPISA COCINA",
+    "piezas": [
+      {
+        "codigo": "A",
+        "ancho": 180.0,
+        "largo": 500.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "B",
+        "ancho": 170.0,
+        "largo": 170.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "C",
+        "ancho": 90.0,
+        "largo": 300.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "nombre": "CRUZ ROJA",
+    "piezas": [
+      {
+        "codigo": "A",
+        "ancho": 180.0,
+        "largo": 600.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "B",
+        "ancho": 180.0,
+        "largo": 380.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "C",
+        "ancho": 150.0,
+        "largo": 375.0,
+        "espesor": 15.0,
+        "cantidad": 1
+      },
+      {
+        "codigo": "D",
+        "ancho": 100.0,
+        "largo": 370.0,
+        "espesor": 15.0,
+        "cantidad": 2
+      },
+      {
+        "codigo": "E",
+        "ancho": 410.0,
+        "largo": 600.0,
+        "espesor": 15.0,
+        "cantidad": 1
+      }
+    ]
   }
 ]
